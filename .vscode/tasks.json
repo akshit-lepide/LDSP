@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Lepide on 5180",
+			"type": "shell",
+			"command": "npm",
+			"args": ["start"],
+			"options": { "env": { "PORT": "5180" } },
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
