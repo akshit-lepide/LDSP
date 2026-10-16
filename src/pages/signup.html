@@ -14,6 +14,7 @@
   <div class="page-shell">
     <header class="page-toolbar">
       <a class="brand-wordmark" href="/login" aria-label="Lepide home"><img src="https://lepide-design-system.vercel.app/v1/brand/lepide-mark.svg" alt="" class="toolbar-mark">lepide</a>
+      <nav class="header-links" aria-label="Account navigation"><a class="lp-link lp-link--standalone" href="/login">Sign in</a><a class="lp-link lp-link--standalone" href="/signup" aria-current="page">Create account</a></nav>
       <div class="theme-control">
         <div class="lp-dropdown lp-dropdown--full-width" data-lp-dropdown="single" id="theme-dropdown">
           <button type="button" class="lp-dropdown__trigger" aria-expanded="false" aria-haspopup="listbox" aria-label="Choose appearance">
@@ -35,14 +36,20 @@
       </div>
     </header>
     <main class="auth-main">
+      <aside class="workspace-intro" aria-label="Lepide workspace">
+        <p class="eyebrow">LEPIDE / WORKSPACE ACCESS</p>
+        <h2 class="intro-title">A new beginning.<br>A clearer point of view.</h2>
+        <div class="brand-composition" aria-hidden="true"><img src="https://lepide-design-system.vercel.app/v1/brand/lepide-mark.svg" alt=""><span class="composition-caption">Make room for what comes next.</span></div>
+        <div class="intro-footer"><span>One workspace. Your next chapter.</span><span>02 / GET STARTED</span></div>
+      </aside>
       <div class="auth-content">
         <div class="auth-heading">
-          <img class="brand-mark" src="https://lepide-design-system.vercel.app/v1/brand/lepide-mark.svg" alt="Lepide" width="40" height="40">
+          <p class="eyebrow">START SOMETHING NEW</p>
           <h1 class="page-title">Create your account</h1>
           <p class="supporting-copy">Your Lepide workspace starts here.</p>
         </div>
-        <div class="lp-card lp-card--elevated lp-card--borderless">
-          <div class="lp-card__body">
+        <div class="auth-surface">
+          <div class="form-body">
             <form class="auth-form" data-auth="signup" novalidate>
               <div class="lp-input lp-input--full-width">
                 <div class="lp-input__row lp-input__row--label-top">
@@ -84,7 +91,7 @@
         <p class="auth-alternative">Already have an account? <a class="lp-link lp-link--inline" href="/login">Sign in</a></p>
       </div>
     </main>
-    <footer class="page-footer"><span>Lepide</span><span>Identity &amp; access</span></footer>
+    <footer class="page-footer"><span>Lepide / Identity &amp; access</span><span>Your space. Your perspective.</span></footer>
   </div>
 </body>
 </html>

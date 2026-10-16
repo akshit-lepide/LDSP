@@ -35,25 +35,31 @@
       </div>
     </header>
     <main class="auth-main" data-account>
+      <aside class="workspace-intro" aria-label="Lepide workspace">
+        <p class="eyebrow">LEPIDE / YOUR WORKSPACE</p>
+        <h2 class="intro-title">Right where<br>you belong.</h2>
+        <div class="brand-composition" aria-hidden="true"><img src="https://lepide-design-system.vercel.app/v1/brand/lepide-mark.svg" alt=""><span class="composition-caption">A little more perspective.</span></div>
+        <div class="intro-footer"><span>One workspace. Your next chapter.</span><span>03 / YOUR ACCOUNT</span></div>
+      </aside>
       <div class="auth-content">
         <div class="auth-heading">
-          <img class="brand-mark" src="https://lepide-design-system.vercel.app/v1/brand/lepide-mark.svg" alt="Lepide" width="40" height="40">
+          <p class="eyebrow">PERSONAL WORKSPACE</p>
           <h1 class="page-title" id="welcome">Your account</h1>
           <p class="supporting-copy" id="account-status" role="status">Loading your account...</p>
         </div>
-        <div class="lp-card lp-card--elevated lp-card--borderless">
-          <div class="lp-card__header"><div class="lp-card__title">Account details</div></div>
-          <div class="lp-card__body">
+        <section class="account-surface" aria-labelledby="details-title">
+          <h2 class="section-title" id="details-title">Account details</h2>
+          <div class="account-body">
             <dl class="account-details"><div><dt>Full name</dt><dd id="account-name">Loading...</dd></div><div><dt>Email</dt><dd id="account-email">Loading...</dd></div><div><dt>Member since</dt><dd id="account-created">Loading...</dd></div></dl>
           </div>
-          <div class="lp-card__footer">
+          <div class="account-actions">
             <form id="logout-form"><button type="submit" class="lp-button lp-button--secondary lp-button--md" data-idle="Sign out" data-loading="Signing out...">Sign out</button></form>
           </div>
-        </div>
+        </section>
         <div class="lp-message lp-message--error" role="alert" id="form-error" hidden><div class="lp-message__content"><div class="lp-message__text"><h3 class="lp-message__title">Unable to complete request</h3><p class="lp-message__body" id="form-error-text"></p></div></div></div>
       </div>
     </main>
-    <footer class="page-footer"><span>Lepide</span><span>Identity &amp; access</span></footer>
+    <footer class="page-footer"><span>Lepide / Identity &amp; access</span><span>Your space. Your perspective.</span></footer>
   </div>
 </body>
 </html>
