@@ -32,7 +32,7 @@ The setup SQL is in [supabase/schema.sql](supabase/schema.sql). Its `expires_at`
 
 The connection uses TLS with certificate verification enabled by default. If your environment requires Supabase's downloadable CA certificate, download it from your project settings and set `NODE_EXTRA_CA_CERTS` in your shell to its local path before starting Node.
 
-For a temporary local-development workaround only, run `$env:DATABASE_TLS_SKIP_VERIFY = 'true'` before setup and startup in PowerShell. Traffic remains encrypted, but the database server's identity is not verified. The app prints a warning and refuses this option when `NODE_ENV=production`. Remove the override with `Remove-Item Env:DATABASE_TLS_SKIP_VERIFY` and restart after configuring a trusted CA. The override is not saved in `.env` automatically.
+For a temporary workaround, run `$env:DATABASE_TLS_SKIP_VERIFY = 'true'` before setup and startup in PowerShell. Traffic remains encrypted, but the database server's identity is not verified, leaving the connection vulnerable to interception. The app prints a warning. Remove the override with `Remove-Item Env:DATABASE_TLS_SKIP_VERIFY` and restart after configuring a trusted CA. The override is not saved in `.env` automatically.
 
 Only `.env.example` should be committed. `.env` is ignored. Neither the connection URI nor any database credentials are sent to the browser.
 
@@ -44,7 +44,9 @@ In **Vercel > Project > Settings > Environment Variables**, configure `DATABASE_
 
 Set `APP_ORIGIN` to your exact production origin (for example, `https://your-project.vercel.app`), without a trailing slash. Alternatively leave it unset to validate same-origin requests against the request host. Do not copy the localhost value to Vercel. No `PORT` setting is needed.
 
-Leave `DATABASE_TLS_SKIP_VERIFY` unset or false: the temporary local certificate bypass is forbidden in production. Configure a trusted CA if the hosted database connection reports a certificate error. Never set `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+Certificate verification is enabled by default. For the explicitly requested temporary Vercel workaround, set `DATABASE_TLS_SKIP_VERIFY=true` in the relevant Vercel environments and redeploy this code. This disables certificate and hostname verification for the database connection only, including in production, and ignores `DATABASE_CA_CERT` while enabled. It increases interception risk; restore verification by removing the flag and configuring the trusted CA below. Never set the global `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+
+If logs show `SELF_SIGNED_CERT_IN_CHAIN`, download the database CA certificate from your Supabase project's database SSL settings. In Vercel environment variables, set `DATABASE_CA_CERT` to the complete PEM file contents, including `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`, for each relevant deployment environment. Paste the contents, not the file path, without surrounding quotes. Both real newlines and literal `\n` separators are supported. Use only a CA obtained from your trusted project settings, not an unverified certificate copied from the failing connection. Redeploy after saving. This adds the configured trust anchor while keeping certificate and hostname verification enabled.
 
 Redeploy after changing environment variables. The default-handler regression tests check page serving, bundled asset paths, unauthenticated account protection and the missing-database response; they do not perform a hosted Vercel deployment. The in-memory IP rate limiter is per function instance, so shared rate limiting is still needed for production-scale deployment.
 

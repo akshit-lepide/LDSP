@@ -7,10 +7,13 @@ export function postgresOptions(connectionString, environment = process.env) {
   const url = new URL(connectionString);
   if (!['postgres:', 'postgresql:'].includes(url.protocol)) throw new Error('DATABASE_URL must be a PostgreSQL connection string.');
   const skipVerification = environment.DATABASE_TLS_SKIP_VERIFY === 'true';
-  if (skipVerification && environment.NODE_ENV === 'production') throw new Error('Database certificate bypass is forbidden in production.');
-  if (skipVerification) console.warn('WARNING: Database TLS certificate verification is disabled for local development.');
+  if (skipVerification) console.warn('WARNING: Database TLS certificate verification is disabled. Database server identity is not verified.');
+  const ca = skipVerification ? undefined : environment.DATABASE_CA_CERT?.replace(/\\n/g, '\n').trim();
+  if (ca && (!ca.startsWith('-----BEGIN CERTIFICATE-----') || !ca.endsWith('-----END CERTIFICATE-----'))) {
+    throw new Error('DATABASE_CA_CERT must contain a PEM CA certificate, not a file path.');
+  }
   for (const parameter of ['sslmode', 'sslcert', 'sslkey', 'sslrootcert', 'ssl']) url.searchParams.delete(parameter);
-  return { connectionString: url.toString(), ssl: { rejectUnauthorized: !skipVerification }, max: 5, connectionTimeoutMillis: 10000 };
+  return { connectionString: url.toString(), ssl: { rejectUnauthorized: !skipVerification, ...(ca ? { ca } : {}) }, max: 5, connectionTimeoutMillis: 10000 };
 }
 
 export function createDatabase({ databasePath, connectionString }) {

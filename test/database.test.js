@@ -10,12 +10,26 @@ test('PostgreSQL configuration enforces verified TLS without exposing credential
   assert.throws(() => postgresOptions('https://example.com'), /PostgreSQL connection string/);
 });
 
-test('certificate bypass is opt-in and forbidden in production', (context) => {
+test('certificate bypass requires explicit opt-in including in production', (context) => {
   context.mock.method(console, 'warn', () => {});
   const connection = 'postgresql://user:password@db.example.com/postgres';
   assert.equal(postgresOptions(connection, { DATABASE_TLS_SKIP_VERIFY: 'true' }).ssl.rejectUnauthorized, false);
   assert.equal(postgresOptions(connection, { DATABASE_TLS_SKIP_VERIFY: 'false' }).ssl.rejectUnauthorized, true);
-  assert.throws(() => postgresOptions(connection, { DATABASE_TLS_SKIP_VERIFY: 'true', NODE_ENV: 'production' }), /forbidden in production/);
+  assert.equal(postgresOptions(connection, { DATABASE_TLS_SKIP_VERIFY: 'true', NODE_ENV: 'production', DATABASE_CA_CERT: 'unused' }).ssl.rejectUnauthorized, false);
+  assert.equal(postgresOptions(connection, { NODE_ENV: 'production' }).ssl.rejectUnauthorized, true);
+  assert.equal(postgresOptions(connection, { DATABASE_TLS_SKIP_VERIFY: 'false', NODE_ENV: 'production' }).ssl.rejectUnauthorized, true);
+  assert.equal(postgresOptions(connection, { DATABASE_TLS_SKIP_VERIFY: 'TRUE', NODE_ENV: 'production' }).ssl.rejectUnauthorized, true);
+});
+
+test('custom CA supports multiline and escaped PEM without disabling production verification', () => {
+  const connection = 'postgresql://user:password@db.example.com/postgres?sslmode=require';
+  const pem = '-----BEGIN CERTIFICATE-----\nTEST-CERTIFICATE\n-----END CERTIFICATE-----';
+  for (const certificate of [pem, pem.replaceAll('\n', '\\n')]) {
+    const options = postgresOptions(connection, { DATABASE_CA_CERT: certificate, NODE_ENV: 'production' });
+    assert.equal(options.ssl.ca, pem);
+    assert.equal(options.ssl.rejectUnauthorized, true);
+  }
+  assert.throws(() => postgresOptions(connection, { DATABASE_CA_CERT: 'certificate.crt' }), /PEM CA certificate/);
 });
 
 test('PostgreSQL adapter binds parameters and converts session expiry timestamps', async (context) => {
