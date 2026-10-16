@@ -36,7 +36,19 @@ For a temporary local-development workaround only, run `$env:DATABASE_TLS_SKIP_V
 
 Only `.env.example` should be committed. `.env` is ignored. Neither the connection URI nor any database credentials are sent to the browser.
 
-## Pages
+## Vercel Deployment
+
+The Node entry point exports a default request handler for Vercel and only listens on a local port outside Vercel. `vercel.json` includes the HTML pages and frontend assets in the function bundle. Use Node.js 24 in the project settings.
+
+In **Vercel > Project > Settings > Environment Variables**, configure `DATABASE_URL` with your Supabase Session pooler URI for the appropriate environments. The local `.env` is not committed or uploaded. The deployed handler refuses to fall back to SQLite when this variable is missing.
+
+Set `APP_ORIGIN` to your exact production origin (for example, `https://your-project.vercel.app`), without a trailing slash. Alternatively leave it unset to validate same-origin requests against the request host. Do not copy the localhost value to Vercel. No `PORT` setting is needed.
+
+Leave `DATABASE_TLS_SKIP_VERIFY` unset or false: the temporary local certificate bypass is forbidden in production. Configure a trusted CA if the hosted database connection reports a certificate error. Never set `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+
+Redeploy after changing environment variables. The default-handler regression tests check page serving, bundled asset paths, unauthenticated account protection and the missing-database response; they do not perform a hosted Vercel deployment. The in-memory IP rate limiter is per function instance, so shared rate limiting is still needed for production-scale deployment.
+
+## Application Routes
 
 - `/login`: email/password sign-in and optional 30-day remembered session.
 - `/signup`: full name, email, password, and password confirmation. Signup signs the user in automatically.

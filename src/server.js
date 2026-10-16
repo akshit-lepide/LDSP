@@ -167,7 +167,21 @@ export function createApp({ databasePath = join(root, '../data/accounts.sqlite')
   return server;
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === fileURLToPath(new URL(`file:///${process.argv[1].replaceAll('\\', '/')}`))) {
+let deployedServer;
+
+export default function handler(request, response) {
+  if (!deployedServer) {
+    if (!process.env.DATABASE_URL) {
+      response.writeHead(503, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+      response.end(JSON.stringify({ error: 'Database is not configured. Set DATABASE_URL in the deployment environment.' }));
+      return;
+    }
+    deployedServer = createApp();
+  }
+  deployedServer.emit('request', request, response);
+}
+
+if (!process.env.VERCEL && process.argv[1] && fileURLToPath(import.meta.url) === fileURLToPath(new URL(`file:///${process.argv[1].replaceAll('\\', '/')}`))) {
   const port = Number(process.env.PORT || 5180);
   const server = createApp();
   try {
